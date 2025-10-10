@@ -1,0 +1,21 @@
+{
+  "name": "mahmud/ppxo",
+  "description": "Product Plus – Extra Options for WooCommerce: Add customizable extra product fields with pricing logic.",
+  "type": "wordpress-plugin",
+  "license": "GPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Mahmudul Hasan",
+      "email": "mahmudhaisan@gmail.com",
+      "homepage": "https://mahmudhaisan.com"
+    }
+  ],
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "PPXO\\": "src/PPXO/"
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

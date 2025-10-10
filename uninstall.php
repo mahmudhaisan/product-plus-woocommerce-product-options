@@ -1,0 +1,1 @@
+<?php // Optional: uninstall clean-up code here
