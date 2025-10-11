@@ -185,7 +185,7 @@ function generateDisplayTab() {
             <!-- Required Field -->
             <div class="mb-3">
                 <div class="form-checkbox">
-                    <input class="form-check-input" type="checkbox" id="wfb-fieldRequired" ${state.currentSettings.required ? 'checked' : ''}>
+                    <input class="form-check-input-box" type="checkbox" id="wfb-fieldRequired" ${state.currentSettings.required ? 'checked' : ''}>
                     <label class="form-check-label" for="wfb-fieldRequired">
                         Required Field
                     </label>
@@ -283,7 +283,7 @@ function generateGeneralPricingSection() {
                 <i class="fas fa-tag me-1"></i>Additional Price
             </label>
             <div class="form-checkbox mb-2">
-                <input class="form-check-input" type="checkbox" id="wfb-pricingEnabled" ${state.currentSettings.pricing?.enabled ? 'checked' : ''}>
+                <input class="form-check-input-box" type="checkbox" id="wfb-pricingEnabled" ${state.currentSettings.pricing?.enabled ? 'checked' : ''}>
                 <label class="form-check-label" for="wfb-pricingEnabled">
                     Add extra cost when this field is used
                 </label>
@@ -353,7 +353,7 @@ function generateValidationTab() {
     validationHtml += `
             <div class="mb-3">
                 <div class="form-checkbox">
-                    <input class="form-check-input" type="checkbox" id="wfb-validationRequired" ${state.currentSettings.required ? 'checked' : ''}>
+                    <input class="form-check-input-box" type="checkbox" id="wfb-validationRequired" ${state.currentSettings.required ? 'checked' : ''}>
                     <label class="form-check-label" for="wfb-validationRequired">
                         Required Field
                     </label>
@@ -441,19 +441,19 @@ function generateValidationTab() {
         `;
     }
 
-    // Pattern validation
-    if (['text', 'textarea', 'email', 'url', 'tel'].includes(state.currentSettings.type)) {
-        validationHtml += `
-            <div class="mb-3">
-                <label class="wfb-form-label-modern">Validation Pattern (RegEx)</label>
-                <input type="text" class="form-control wfb-form-control-modern" 
-                    id="wfb-validationPattern" 
-                    value="${state.currentSettings.validation.pattern || ''}" 
-                    placeholder="^[A-Za-z ]+$">
-                <div class="form-text">Use regular expressions for custom validation</div>
-            </div>
-        `;
-    }
+    // // Pattern validation
+    // if (['text', 'textarea', 'email', 'url', 'tel'].includes(state.currentSettings.type)) {
+    //     validationHtml += `
+    //         <div class="mb-3">
+    //             <label class="wfb-form-label-modern">Validation Pattern (RegEx)</label>
+    //             <input type="text" class="form-control wfb-form-control-modern" 
+    //                 id="wfb-validationPattern" 
+    //                 value="${state.currentSettings.validation.pattern || ''}" 
+    //                 placeholder="^[A-Za-z ]+$">
+    //             <div class="form-text">Use regular expressions for custom validation</div>
+    //         </div>
+    //     `;
+    // }
 
     // Predefined patterns
     if (['text', 'tel', 'email'].includes(state.currentSettings.type)) {
@@ -665,24 +665,7 @@ function generateAdvancedTab() {
                 </div>
             </div>
 
-            <div class="mb-3">
-                <div class="form-checkbox">
-                    <input class="form-check-input" type="checkbox" id="wfb-advancedAdminOnly" ${state.currentSettings.adminOnly ? 'checked' : ''}>
-                    <label class="form-check-label" for="wfb-advancedAdminOnly">
-                        Admin Only Field
-                    </label>
-                </div>
-                <div class="form-text">Only visible to administrators</div>
-            </div>
-
-            <div class="mb-3">
-                <label class="wfb-form-label-modern">Custom Attributes</label>
-                <textarea class="form-control wfb-form-control-modern" 
-                    id="wfb-advancedCustomAttributes" 
-                    rows="3" 
-                    placeholder="data-custom=&quot;value&quot;&#10;aria-label=&quot;description&quot;">${state.currentSettings.customAttributes || ''}</textarea>
-                <div class="form-text">One attribute per line: attribute=&quot;value&quot;</div>
-            </div>
+           
         </div>
     </div>
     `;
@@ -699,7 +682,7 @@ function generatePricingTab() {
         <div class="wfb-settings-card-body">
             <div class="mb-3">
                 <div class="form-checkbox">
-                    <input class="form-check-input" type="checkbox" id="wfb-pricingEnabled" ${state.currentSettings.pricing?.enabled ? 'checked' : ''}>
+                    <input class="form-check-input-box" type="checkbox" id="wfb-pricingEnabled" ${state.currentSettings.pricing?.enabled ? 'checked' : ''}>
                     <label class="form-check-label" for="wfb-pricingEnabled">
                         Enable Extra Pricing
                     </label>
@@ -827,7 +810,7 @@ function initializeOptions() {
     } else {
         // Add default options for new fields
         addOptionRow('Option 1', 0, true, 0);
-        addOptionRow('Option 2', 0, false, 1);
+
     }
     
     // Re-bind add option button
@@ -870,7 +853,7 @@ function addOptionRow(name = '', price = 0, isDefault = false, index = 0) {
             </div>
             <div class="col-md-2">
                 <div class="form-check text-center">
-                    <input class="form-check-input wfb-option-default" type="radio" name="defaultOption" 
+                    <input class="form-check-input-box wfb-option-default" type="radio" name="defaultOption" 
                         ${isDefault ? 'checked' : ''}>
                     <label class="form-check-label small">Default</label>
                 </div>
@@ -1063,7 +1046,7 @@ function applySettings(e) {
 // Update collectDisplaySettings to handle both pricing types
 function collectDisplaySettings() {
 
-    
+
     state.currentSettings.label = jQuery('#wfb-fieldLabel').val() || 'Untitled Field';
     state.currentSettings.required = jQuery('#wfb-fieldRequired').is(':checked');
     state.currentSettings.placeholder = jQuery('#wfb-fieldPlaceholder').val() || '';

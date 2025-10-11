@@ -3,11 +3,24 @@ a {
 }
 
 
-.form-check-input:checked {
+.form-check-input-box:checked {
     background-color: #0d6dfd00;
     border-color: #0d6dfd00;
 }
-/* Prefix all classes with wfb- to avoid conflicts */
+/* Prefix all classes
+
+with wfb- to avoid conflicts */
+.form-checkbox {
+    margin-top: 6px;
+}
+
+label.form-check-label {
+    margin-top: -2px;
+}
+
+
+
+
 
 
 .wfb-body {
