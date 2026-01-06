@@ -302,25 +302,19 @@ class MetaBoxes
                         <label for="ppxo_hook" class="form-label"><?php _e('Choose Insertion Point on Product Page', 'ppxo'); ?></label>
 
                         <?php
-                        // Curated list of WooCommerce product page hooks
+                        /// Curated list of WooCommerce product page hooks
                         $product_hooks = [
 
-
                             // Before Product
-                            'woocommerce_before_single_product'                 => 'Before Single Product Wrapper',
-                            'woocommerce_before_single_product_summary'        => 'Before Product Summary (Near Image)',
-                            'woocommerce_before_add_to_cart_form'              => 'Before Add to Cart Form',
-                            'woocommerce_before_add_to_cart_button'            => 'Before Add to Cart Button',
+                            'woocommerce_before_add_to_cart_button'     => 'Before Add to Cart Button',             // Vital
 
                             // After Product
-                            'woocommerce_after_add_to_cart_button'             => 'After Add to Cart Button',
-                            'woocommerce_after_add_to_cart_form'              => 'After Add to Cart Form',
-                            'woocommerce_after_single_product_summary'        => 'After Product Summary (Below Content)',
-                            'woocommerce_after_single_product'                => 'After Single Product Wrapper',
-
-                            // Classic and Block theme friendly hooks
-                            'woocommerce_single_product_summary'              => 'Inside Product Summary (title, price, etc.)',
+                            'woocommerce_after_add_to_cart_button'      => 'After Add to Cart Button',
+                            'woocommerce_after_add_to_cart_form'       => 'After Add to Cart Form',
+                            // Inside Product Summary
+                            'woocommerce_single_product_summary'        => 'Inside Product Summary (title, price, etc.)', // Vital
                         ];
+
 
                         // Selected hook from saved option
                         $selected_hook = get_post_meta($post->ID, '_ppxo_hook', true);
@@ -665,3 +659,15 @@ class MetaBoxes
 <?php
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+

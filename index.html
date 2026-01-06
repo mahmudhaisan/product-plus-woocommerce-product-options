@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Plus - Dashboard</title>
+    <style>
+        :root {
+            --primary: #6d28d9;
+            --primary-light: #8b5cf6;
+            --primary-dark: #5b21b6;
+            --secondary: #f1f5f9;
+            --accent: #fbbf24;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --white: #ffffff;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .dashboard {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .brand-text h1 {
+            font-size: 28px;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .brand-text p {
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--white);
+            padding: 8px 15px;
+            border-radius: 30px;
+            box-shadow: var(--shadow);
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            border-radius: 8px;
+            background: var(--secondary);
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary);
+        }
+
+        .stat-item:hover .stat-value {
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .stat-item:hover .stat-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .plugin-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background: var(--secondary);
+            transition: all 0.3s ease;
+        }
+
+        .plugin-item:hover {
+            background: var(--primary-light);
+            color: white;
+        }
+
+        .plugin-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .plugin-info h4 {
+            margin-bottom: 5px;
+        }
+
+        .plugin-info p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .plugin-item:hover .plugin-info p {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .community-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .community-card .card-title {
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .community-card p {
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+
+        .community-card .btn {
+            background: white;
+            color: var(--primary);
+        }
+
+        .community-card .btn:hover {
+            background: var(--accent);
+            color: var(--text);
+        }
+
+        .resources-list {
+            list-style: none;
+        }
+
+        .resources-list li {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .resources-list li:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .resources-list a {
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .resources-list a:hover {
+            color: var(--primary-dark);
+            gap: 15px;
+        }
+
+        .review-card {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .review-card p {
+            margin-bottom: 20px;
+        }
+
+        .stars {
+            color: var(--accent);
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            border-top: 1px solid var(--border);
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 20px;
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="header">
+            <div class="brand">
+                <div class="logo">PP</div>
+                <div class="brand-text">
+                    <h1>Product Plus</h1>
+                    <p>Extra Options for WooCommerce</p>
+                </div>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar">MH</div>
+                <div>
+                    <div>Mahmudul Hasan</div>
+                    <div style="font-size: 12px; color: var(--text-light);">wpagain.com</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Create Options</h2>
+                    <div class="card-icon">+</div>
+                </div>
+                <p>Effortlessly add custom product options—text fields, images, swatches, and more!</p>
+                <div style="margin-top: 20px;">
+                    <a href="#" class="btn">Create New Option</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Addons Analytics</h2>
+                    <div class="card-icon">📊</div>
+                </div>
+                <p>Track Sales, Orders, Clicks, and Add-to-Cart Rate.</p>
+                
+                <div class="stats-grid" style="margin-top: 20px;">
+                    <div class="stat-item">
+                        <div class="stat-value">$299</div>
+                        <div class="stat-label">Total Sales (Addons)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">9</div>
+                        <div class="stat-label">Total Orders (Addons)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">28</div>
+                        <div class="stat-label">Clicks Count</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">23</div>
+                        <div class="stat-label">Add to Cart Count</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: right;">
+                    <a href="#" class="btn btn-outline">All Analytics →</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Our Plugins</h2>
+                    <div class="card-icon">🔌</div>
+                </div>
+                
+                <div class="plugin-item">
+                    <div class="plugin-icon">WS</div>
+                    <div class="plugin-info">
+                        <h4>WowStore</h4>
+                        <p>No-code WooCommerce, start to find...</p>
+                    </div>
+                </div>
+                
+                <div class="plugin-item">
+                    <div class="plugin-icon">WR</div>
+                    <div class="plugin-info">
+                        <h4>WowRevenue</h4>
+                        <p>Boost Sales & AOY with Custom Cam...</p>
+                    </div>
+                </div>
+                
+                <div class="plugin-item">
+                    <div class="plugin-icon">WX</div>
+                    <div class="plugin-info">
+                        <h4>Wholesalox</h4>
+                        <p>All-in-One E2B Wholesale Solution...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card community-card">
+                <h2 class="card-title">Join Our Community</h2>
+                <p>Join the WowAddons community to connect with other users and share your experience with everyone.</p>
+                <a href="#" class="btn">Join The Community</a>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Resources</h2>
+                    <div class="card-icon">📚</div>
+                </div>
+                
+                <ul class="resources-list">
+                    <li><a href="#"><span>📖</span> Documentation</a></li>
+                    <li><a href="#"><span>🎓</span> Beginner Tutorials</a></li>
+                    <li><a href="#"><span>💡</span> Feature Requests</a></li>
+                    <li><a href="#"><span>🎬</span> Watch Video</a></li>
+                    <li><a href="#"><span>🚀</span> Request a Feature</a></li>
+                </ul>
+            </div>
+
+            <div class="card review-card">
+                <h2 class="card-title">Leave a review</h2>
+                <p>Love the features and functionalities of WowAddons - show your support by sharing a 5-star review.</p>
+                <div class="stars">★★★★★</div>
+                <a href="#" class="btn">Write a Review</a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Thank you for creating with <a href="https://wordpress.org" target="_blank">WordPress</a>.</p>
+            <p>Product Plus - Version 1.0.0 | Developed by <a href="https://wpagain.com/" target="_blank">Mahmudul Hasan</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Add simple animations on scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

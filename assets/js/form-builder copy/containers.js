@@ -72,24 +72,24 @@ export function addContainer(numColumns = 2) {
     const containerHtml = generateContainerHtml(containerId, columns);
 
     // Remove placeholder if it exists
-    if (jQuery('#ppxo-formBuilder .wfb-container-placeholder').length) {
-        jQuery('#ppxo-formBuilder .wfb-container-placeholder').remove();
+    if (jQuery('#wfb-formBuilder .wfb-container-placeholder').length) {
+        jQuery('#wfb-formBuilder .wfb-container-placeholder').remove();
     }
 
     // Insert at the correct position if we have a drop position
     if (state.dropPosition && state.dropPosition.index !== undefined) {
-        if (state.dropPosition.index >= jQuery('#ppxo-formBuilder').children().length) {
-            jQuery('#ppxo-formBuilder').append(containerHtml);
+        if (state.dropPosition.index >= jQuery('#wfb-formBuilder').children().length) {
+            jQuery('#wfb-formBuilder').append(containerHtml);
         } else {
-            jQuery(`#ppxo-formBuilder > *:eq(${state.dropPosition.index})`).before(containerHtml);
+            jQuery(`#wfb-formBuilder > *:eq(${state.dropPosition.index})`).before(containerHtml);
         }
     } else {
-        jQuery('#ppxo-formBuilder').append(containerHtml);
+        jQuery('#wfb-formBuilder').append(containerHtml);
     }
 
     // Make columns droppable
     jQuery('.wfb-column-drop-zone').droppable({
-        accept: '.ppxo-options-component',
+        accept: '.wfb-component',
         hoverClass: 'active',
         drop: function(event, ui) {
             const componentType = ui.draggable.data('type');
@@ -139,7 +139,7 @@ export function addContainer(numColumns = 2) {
     });
 
     // Make the container sortable
-    jQuery('#ppxo-formBuilder').sortable('refresh');
+    jQuery('#wfb-formBuilder').sortable('refresh');
 }
 
 function generateContainerHtml(containerId, columns) {
@@ -206,9 +206,9 @@ function bindContainerEvents() {
         formData.fields = formData.fields.filter(field => field.id !== containerId);
 
         // Add placeholder if no components left
-        if (jQuery('#ppxo-formBuilder').children().length === 0) {
-            jQuery('#ppxo-formBuilder').html(`
-                <div class="wfb-container-placeholder highlight" id="ppxo-initialPlaceholder">
+        if (jQuery('#wfb-formBuilder').children().length === 0) {
+            jQuery('#wfb-formBuilder').html(`
+                <div class="wfb-container-placeholder highlight" id="wfb-initialPlaceholder">
                     <i class="fas fa-hand-point-left fa-2x mb-2"></i>
                     <h5>Drag components from the sidebar to start building your form</h5>
                     <p class="mb-0">Drop fields in the highlighted area to add them to your form</p>
@@ -226,15 +226,15 @@ export function rebuildContainer(containerData) {
     const containerHtml = generateContainerHtml(containerId, containerData.columns);
 
     // Remove placeholder if it exists
-    if (jQuery('#ppxo-formBuilder .wfb-container-placeholder').length) {
-        jQuery('#ppxo-formBuilder .wfb-container-placeholder').remove();
+    if (jQuery('#wfb-formBuilder .wfb-container-placeholder').length) {
+        jQuery('#wfb-formBuilder .wfb-container-placeholder').remove();
     }
 
-    jQuery('#ppxo-formBuilder').append(containerHtml);
+    jQuery('#wfb-formBuilder').append(containerHtml);
 
     // Make columns droppable
     jQuery('.wfb-column-drop-zone').droppable({
-        accept: '.ppxo-options-component',
+        accept: '.wfb-component',
         hoverClass: 'active',
         drop: function(event, ui) {
             const componentType = ui.draggable.data('type');
@@ -287,5 +287,5 @@ export function rebuildContainer(containerData) {
     });
 
     // Make the container sortable
-    jQuery('#ppxo-formBuilder').sortable('refresh');
+    jQuery('#wfb-formBuilder').sortable('refresh');
 }

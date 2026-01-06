@@ -13,13 +13,13 @@ export function initCore() {
         dropPosition: null
     };
 
-    // Initialize form data
     formData = {
-        fields: []
+        fields: [],
+        products: [],
+        hook: ''
     };
-
     // Initialize tooltips
-    initTooltips();
+    // initTooltips();
 
     // Bind core events
     bindCoreEvents();
@@ -27,51 +27,21 @@ export function initCore() {
     return { state, formData };
 }
 
-function initTooltips() {
-    if (typeof jQuery !== 'undefined') {
-        jQuery('[data-bs-toggle="tooltip"]').tooltip();
-    }
-}
 
 function bindCoreEvents() {
     // Search functionality
-    jQuery('#wfb-searchComponents').on('keyup', function() {
+    jQuery('#wfb-searchComponents').on('keyup', function () {
         const searchText = jQuery(this).val().toLowerCase();
-        jQuery('.wfb-component').each(function() {
+        jQuery('.ppxo-options-component').each(function () {
             const componentText = jQuery(this).text().toLowerCase();
             jQuery(this).toggle(componentText.includes(searchText));
         });
     });
+
+
+    
 }
 
-// Add CSS for tooltip hints
-function addTooltipStyles() {
-    const css = `
-        .wfb-tooltip-hint {
-            color: #6c757d;
-            margin-left: 5px;
-            cursor: help;
-        }
-        .wfb-tooltip-hint:hover {
-            color: #495057;
-        }
-        .wfb-form-control-modern:focus {
-            border-color: #007cba;
-            box-shadow: 0 0 0 1px #007cba;
-        }
-        .form-text {
-            font-size: 0.875em;
-            color: #6c757d;
-            margin-top: 0.25rem;
-        }
-    `;
-    jQuery('head').append(`<style>${css}</style>`);
-}
-
-// Initialize when document is ready
-jQuery(document).ready(function() {
-    addTooltipStyles();
-});
 
 // State helpers
 export function updateState(newState) {
@@ -81,3 +51,55 @@ export function updateState(newState) {
 export function updateFormData(newData) {
     Object.assign(formData, newData);
 }
+
+
+
+function ensureBuilderPlaceholder() {
+    const $builder = jQuery('#ppxo-formBuilder');
+
+    // builder not ready yet
+    if (!$builder.length) return;
+
+    const hasFields = $builder.find('.wfb-form-field').length > 0;
+
+    console.log(hasFields);
+
+
+    const hasPlaceholder = $builder.find('#ppxo-initialPlaceholder').length > 0;
+
+    if (!hasFields && !hasPlaceholder) {
+        console.log('Adding empty builder placeholder');
+
+        $builder.append(`
+            <div id="ppxo-initialPlaceholder"
+                 class="ppxo-empty-placeholder text-center text-muted"
+                 aria-hidden="true">
+                <i class="fas fa-hand-point-down fa-2x mb-3"></i>
+                <h5 class="mb-2">Drag components here</h5>
+                <p class="mb-0">
+                    Drop fields in this highlighted area to add them to your form
+                </p>
+            </div>
+        `);
+    }
+}
+
+
+jQuery(document).ready(() => {
+    const params = new URLSearchParams(window.location.search);
+    const action = params.get('action');
+
+    if (action === 'new') {
+        ensureBuilderPlaceholder();
+    }
+});
+
+
+
+
+
+
+
+
+
+

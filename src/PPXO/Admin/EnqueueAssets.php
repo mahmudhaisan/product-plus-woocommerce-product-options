@@ -1,10 +1,13 @@
 <?php
+
 namespace PPXO\Admin;
 
 defined('ABSPATH') || exit;
 
-class EnqueueAssets {
-    public function register() {
+class EnqueueAssets
+{
+    public function register()
+    {
         add_action('admin_enqueue_scripts', [$this, 'enqueue_admin_assets']);
     }
 
@@ -13,157 +16,123 @@ class EnqueueAssets {
 
 
 
+
+/**
+ * Enqueue CSS and JS assets for ALL Product Plus admin pages.
+ */
+public function enqueue_admin_assets($hook)
+{
+    global $post_type;
+
+    $is_ppxo_page = (
+        strpos($hook, 'ppxo-') !== false ||
+        $post_type === 'ppxo_form' ||
+        $hook === 'toplevel_page_ppxo-main' ||
+        (isset($_GET['post_type']) && $_GET['post_type'] === 'ppxo_form') ||
+        $hook === 'product-plus_page_ppxo-global-form' ||
+        $hook === 'product-plus_page_ppxo-help'
+    );
+
+    if (!$is_ppxo_page) {
+        return;
+    }
+
     /**
-     * Enqueue CSS and JS assets for ALL Product Plus admin pages.
-     *
-     * @param string $hook The current admin page hook.
+     * STYLES
      */
-    public function enqueue_admin_assets($hook)
-    {
-        global $post_type;
 
-        // Load on ALL Product Plus admin pages
-        $is_ppxo_page = (
-            strpos($hook, 'ppxo-') !== false ||
-            $post_type === 'ppxo_form' ||
-            $hook === 'toplevel_page_ppxo-main' ||
-            (isset($_GET['post_type']) && $_GET['post_type'] === 'ppxo_form') ||
-            $hook === 'product-plus_page_ppxo-global-form' ||
-            $hook === 'product-plus_page_ppxo-help'
-        );
+    wp_enqueue_style(
+        'ppxo-fontawesome',
+        PPXO_ASSETS . '/css/fontawesome.min.css',
+        [],
+        '6.5.1'
+    );
 
-        if (!$is_ppxo_page) {
-            return;
-        }
+    wp_enqueue_style(
+        'ppxo-select2',
+        PPXO_ASSETS . '/css/select2.min.css',
+        [],
+        '4.1.0'
+    );
 
-        /**
-         * -----------------------------
-         *  STYLES
-         * -----------------------------
-         */
+    // Load Bootstrap 5 CSS (not v4)
+    wp_enqueue_style(
+        'ppxo-bootstrap',
+        PPXO_ASSETS . '/css/bootstrap.min.css', // make sure this is BS5 CSS
+        [],
+        '5.3.3'
+    );
 
-        // Bootstrap CSS
-        wp_enqueue_style(
-            'ppxo-bootstrap',
-            PPXO_ASSETS . '/css/bootstrap.min.css',
-            [],
-            '5.3.3'
-        );
-
-        // Font Awesome
-        wp_enqueue_style(
-            'ppxo-fontawesome',
-            PPXO_ASSETS . '/css/fontawesome.min.css',
-            [],
-            '6.5.1'
-        );
-
-        // Select2 CSS
-        wp_enqueue_style(
-            'ppxo-select2',
-            PPXO_ASSETS . '/css/select2.min.css',
-            [],
-            '4.1.0'
-        );
-
-        // Custom admin styles
-        wp_enqueue_style(
-            'ppxo-admin-style',
-            PPXO_ASSETS . '/css/admin.css',
-            ['ppxo-bootstrap'],
-            PPXO_VERSION
-        );
+    wp_enqueue_style(
+        'ppxo-admin-style',
+        PPXO_ASSETS . '/css/admin.css',
+        [],
+        PPXO_VERSION
+    );
 
 
-        /**
-         * -----------------------------
-         *  SCRIPTS
-         * -----------------------------
-         */
+    /**
+     * SCRIPTS
+     */
 
-        // Check if we're on the form builder page
-        $is_form_builder_page = (
-            $post_type === 'ppxo_form' &&
-            ($hook === 'post.php' || $hook === 'post-new.php')
-        );
 
-        // jQuery UI (only needed for form builder)
-        if ($is_form_builder_page) {
-            wp_enqueue_script(
-                'ppxo-jquery-ui',
-                PPXO_ASSETS . '/js/jquery-ui.min.js',
-                ['jquery'],
-                PPXO_VERSION,
-                true
-            );
-        }
+    wp_enqueue_script(
+        'ppxo-bootstrap',
+        PPXO_ASSETS . '/js/bootstrap.min.js',
+        ['jquery'],
+        '5.3.3',
+        true
+    );
 
-        // Chart.js for Dashboard
-        if ($hook === 'toplevel_page_ppxo-main') {
-            wp_enqueue_script(
-                'ppxo-chart-js',
-                'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js',
-                [],
-                '3.9.1',
-                true
-            );
-        }
+    wp_enqueue_script(
+        'ppxo-select2',
+        PPXO_ASSETS . '/js/select2.min.js',
+        ['jquery'],
+        '4.1.0',
+        true
+    );
 
-        // Bootstrap JS
+
+    // Form builder or normal admin
+    $is_form_builder_page = (
+        ($post_type === 'ppxo_form' && ($hook === 'post.php' || $hook === 'post-new.php'))
+        || $hook === 'product-plus_page_ppxo-options'
+    );
+
+    if ($is_form_builder_page) {
+        $this->enqueue_form_builder_assets();
+    } else {
         wp_enqueue_script(
-            'ppxo-bootstrap',
-            PPXO_ASSETS . '/js/bootstrap.min.js',
-            ['jquery'],
-            '5.3.3',
+            'ppxo-admin-script',
+            PPXO_ASSETS . '/js/admin.js',
+            ['jquery', 'ppxo-bootstrap', 'ppxo-select2'],
+            PPXO_VERSION,
             true
         );
-
-        // Select2 JS
-        wp_enqueue_script(
-            'ppxo-select2',
-            PPXO_ASSETS . '/js/select2.min.js',
-            ['jquery'],
-            '4.1.0',
-            true
-        );
-
-        // Enqueue Form Builder specific assets or default admin
-        if ($is_form_builder_page) {
-            $this->enqueue_form_builder_assets();
-        } else {
-            wp_enqueue_script(
-                'ppxo-admin-script',
-                PPXO_ASSETS . '/js/admin.js',
-                ['jquery', 'ppxo-bootstrap', 'ppxo-select2'],
-                PPXO_VERSION,
-                true
-            );
-        }
-
-        // Localize data for Dashboard
-        if ($hook === 'toplevel_page_ppxo-main') {
-            $chart_data = $this->get_chart_data();
-
-            wp_localize_script(
-                'ppxo-admin-script',
-                'ppxo_dashboard',
-                [
-                    'chart_data' => $chart_data,
-                    'ajax_url'   => admin_url('admin-ajax.php'),
-                    'nonce'      => wp_create_nonce('ppxo_dashboard_nonce')
-                ]
-            );
-        }
     }
 
 
+    // Dashboard localization
+    if ($hook === 'toplevel_page_ppxo-main') {
+        wp_localize_script(
+            'ppxo-admin-script',
+            'ppxo_dashboard',
+            [
+                // 'chart_data' => $this->get_chart_data(),
+                'ajax_url'   => admin_url('admin-ajax.php'),
+                'nonce'      => wp_create_nonce('ppxo_dashboard_nonce')
+            ]
+        );
+    }
+}
 
 
 
 
 
 
-        /**
+
+    /**
      * Enqueue form builder specific assets
      */
     private function enqueue_form_builder_assets()
@@ -245,7 +214,4 @@ class EnqueueAssets {
             ]
         ];
     }
-
-
-
 }

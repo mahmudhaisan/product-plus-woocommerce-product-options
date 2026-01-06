@@ -46,7 +46,7 @@ class Init
         $this->define_constants();
 
         // Register activation hook to verify WooCommerce dependency
-        register_activation_hook(__FILE__, [$this, 'activate']);
+register_activation_hook(PPXO_PLUGIN_FILE, [$this, 'activate']);
 
         // Initialize plugin once all plugins are loaded
         add_action('plugins_loaded', [$this, 'run']);
@@ -70,7 +70,7 @@ class Init
         define('PPXO_PLUGIN_URL', plugin_dir_url($this->plugin_file));
         define('PPXO_ASSETS', PPXO_PLUGIN_URL . 'assets');
 
-      
+       
     }
 
     /**
@@ -79,6 +79,7 @@ class Init
      */
     public function activate()
     {
+        // Check WooCommerce dependency
         if (!class_exists('WooCommerce')) {
             deactivate_plugins(plugin_basename(__FILE__));
             wp_die(
@@ -88,9 +89,26 @@ class Init
             );
         }
 
-        // Store plugin version for future use (like upgrades)
+        // Store plugin version
         update_option('ppxo_version', PPXO_VERSION);
+
+        // Create custom forms table
+        global $wpdb;
+        $table = $wpdb->prefix . 'ppxo_forms';
+        $charset_collate = $wpdb->get_charset_collate();
+
+        $sql = "CREATE TABLE IF NOT EXISTS $table (
+        form_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        form_data LONGTEXT NOT NULL,
+        created_at DATETIME NOT NULL,
+        updated_at DATETIME NOT NULL,
+        PRIMARY KEY (form_id)
+    ) $charset_collate;";
+
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+        dbDelta($sql);
     }
+
 
     /**
      * Initialize plugin classes based on context (admin or frontend)

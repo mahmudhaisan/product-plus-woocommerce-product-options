@@ -1,4 +1,4 @@
-import { state, formData } from './core.js';
+import { formData } from './core.js';
 import { generateFieldPreview } from './utils.js';
 
 export function initPreview(state, formData) {
@@ -7,54 +7,34 @@ export function initPreview(state, formData) {
 
 function bindPreviewEvents() {
     // Preview form
-    jQuery('#ppxo-previewBtn').on('click', function (e) {
+    jQuery('#wfb-previewBtn').on('click', function(e) {
         e.preventDefault();
         generateFormPreview();
-
+        jQuery('#wfb-previewModal').modal('show');
     });
 
-
-    /* Initialize export */
-    jQuery('#ppxo-exportBtn').on('click', function (e) {
+    // Export JSON
+    jQuery('#wfb-exportBtn').on('click', function(e) {
         e.preventDefault();
-        renderJsonPanel(formData);
-        jQuery('#wfb-panelJson').removeClass('d-none');
+        jQuery('#wfb-jsonOutput').text(JSON.stringify(formData, null, 2));
+        jQuery('#wfb-jsonModal').modal('show');
     });
-jQuery('#wfb-copyJsonBtn').on('click', function (e) {
-    e.preventDefault();
-    const jsonText = JSON.stringify(formData, null, 2);
 
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-        // Modern way
-        navigator.clipboard.writeText(jsonText).then(function () {
+    // Copy JSON to clipboard
+    jQuery('#wfb-copyJsonBtn').on('click', function(e) {
+        e.preventDefault();
+        const jsonText = JSON.stringify(formData, null, 2);
+        navigator.clipboard.writeText(jsonText).then(function() {
             alert('JSON copied to clipboard!');
-        }).catch(function (err) {
-            alert('Failed to copy JSON: ' + err);
         });
-    } else {
-        // Fallback for insecure context
-        const $temp = jQuery('<textarea>');
-        jQuery('body').append($temp);
-        $temp.val(jsonText).select();
-        try {
-            document.execCommand('copy');
-            alert('JSON copied to clipboard!');
-        } catch (err) {
-            alert('Failed to copy JSON: ' + err);
-        }
-        $temp.remove();
-    }
-});
-
-
-
-
-
+    });
 }
 
 function generateFormPreview() {
+    console.log(formData);
 
     let previewHtml = '<form class="p-3">';
+    
     if (!formData.fields || formData.fields.length === 0) {
         previewHtml += '<div class="alert alert-info">No fields in the form yet. Add some fields first.</div>';
     } else {
@@ -91,45 +71,16 @@ function generateFormPreview() {
             }
         });
     }
-
+    
     previewHtml += '<button type="submit" class="btn btn-primary mt-3">Submit Form</button>';
     previewHtml += '</form>';
 
     jQuery('#wfb-formPreview').html(previewHtml);
 
     // Prevent Enter from submitting the preview form
-    jQuery('#wfb-previewForm').on('keydown', 'input, textarea', function (e) {
+    jQuery('#wfb-previewForm').on('keydown', 'input, textarea', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
         }
     });
-}
-
-/* Render JSON with simple syntax highlighting */
-function renderJsonPanel(jsonData) {
-    const jsonStr = JSON.stringify(jsonData, null, 2);
-
-    // Escape HTML
-    let escaped = jsonStr.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-    // Highlight keys, strings, numbers, booleans, null
-    escaped = escaped.replace(
-        /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?)|(\b(true|false|null)\b)|(-?\d+(\.\d+)?([eE][+\-]?\d+)?)/g,
-        function (match) {
-            if (/^"/.test(match)) {
-                if (/:$/.test(match)) {
-                    return `<span class="key">${match}</span>`; // key
-                } else {
-                    return `<span class="string">${match}</span>`; // string value
-                }
-            } else if (/true|false/.test(match)) {
-                return `<span class="boolean">${match}</span>`;
-            } else if (/null/.test(match)) {
-                return `<span class="null">${match}</span>`;
-            }
-            return `<span class="number">${match}</span>`;
-        }
-    );
-
-    jQuery('#wfb-jsonContent').html(escaped);
 }

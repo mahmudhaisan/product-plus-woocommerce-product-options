@@ -23,7 +23,7 @@ class FormPreview {
         $form_data = get_post_meta($form_id, '_ppxo_form_data', true);
 
         // Render preview page
-        include PPXO_PLUGIN_DIR . 'templates/form-preview.php';
+        // include PPXO_PLUGIN_DIR . 'templates/form-preview.php';
         exit;
     }
 

@@ -2,12 +2,14 @@
 
 namespace PPXO;
 
+use PPXO\Admin\Menu\AdminMenu;
+
+
 use PPXO\Admin\{
-    RegisterCPT,
-    AdminMenu,
+    // RegisterCPT,
     EnqueueAssets,
     PluginLinks,
-    MetaBoxes,
+    // MetaBoxes,
     SaveDisplaySettings,
     SaveFormData,
     FormPreview,
@@ -29,18 +31,18 @@ class Admin
     public function __construct()
     {
         // Each file below keeps your original methods
-        (new RegisterCPT())->register();
+        // (new RegisterCPT())->register();
         (new AdminMenu())->register();
         (new EnqueueAssets())->register();
         (new PluginLinks())->register();
-        (new MetaBoxes())->register();
-        (new SaveDisplaySettings())->register();
-        (new SaveFormData())->register();
-        (new FormPreview())->register();
+        // // (new MetaBoxes())->register();
+        // (new SaveDisplaySettings())->register();
+        // (new SaveFormData())->register();
+        // (new FormPreview())->register();
         (new AjaxHandler())->register();
-        (new LocalizeScript())->register();
-        (new MenuHighlight())->register();
-        // (new RemovePublishBox())->register();
-        (new CustomMessages())->register();
+        // (new LocalizeScript())->register();
+        // (new MenuHighlight())->register();
+        // // (new RemovePublishBox())->register();
+        // (new CustomMessages())->register();
     }
 }

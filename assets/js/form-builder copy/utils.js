@@ -22,119 +22,172 @@ export function findFieldById(fieldId, formData) {
 
 
 export function generateFieldHtml(settings) {
-    const advanced = settings.advanced || {};
-    const pricing = settings.pricing || {};
+    console.log('Generating HTML for field:', settings);
 
     const fieldId = settings.id;
-    const type = settings.type;
-    const label = settings.label || '';
-    const required = !!settings.required;
-    const hideLabel = !!settings.hideLabel;
-    const placeholder = settings.placeholder || '';
+    const defaultValue = settings.defaultValue || '';
+    const wrapperClass = settings.wrapperClass || '';
+    const inputClass = settings.inputClass || '';
     const helpText = settings.helpText || '';
-    const defaultValue = advanced.defaultValue ?? '';
-    const description = advanced.description ?? '';
-    const wrapperClass = advanced.wrapperClass ?? '';
-    const inputClass = advanced.inputClass ?? '';
-    const beforeText = advanced.beforeText ?? '';
-    const afterText = advanced.afterText ?? '';
-    const priceAmount = Number(pricing.price || 0);
+    const description = settings.description || '';
+    const beforeText = settings.beforeText || '';
+    const afterText = settings.afterText || '';
 
-    // ACTION BUTTONS (Kept exactly as requested)
-    const getFieldActionsHtml = () => `
-        <button class="btn btn-sm btn-light border p-1 wfb-edit-field" title="Edit Settings">
-            <i class="fas fa-cog text-secondary"></i>
-        </button>
-        <button class="btn btn-sm btn-light border p-1 wfb-duplicate-field" title="Duplicate Field">
-            <i class="fas fa-copy text-info"></i>
-        </button>
-        <button class="btn btn-sm btn-light border p-1 wfb-remove-field" title="Delete Field">
-            <i class="fas fa-trash-alt text-danger"></i>
-        </button>
+    // --- Styles from displayStyle ---
+    const displayStyle = settings.advanced?.displayStyle || {};
+    const labelStyle = displayStyle.label || {};
+    const placeholderStyle = displayStyle.placeholder || {};
+    const defaultValueStyle = displayStyle.defaultValue || {};
+    const helpTextStyle = displayStyle.helpText || {};
+    const descriptionStyle = displayStyle.description || {};
+    const fieldBackground = displayStyle.fieldBackground || ''; // wrapper bg
+
+    // Convert style object to inline CSS string
+    const styleToString = (style) => {
+        let s = '';
+        if (style.color) s += `color:${style.color};`;
+        if (style.fontSize) s += `font-size:${style.fontSize}px;`;
+        return s;
+    };
+
+    // Price label
+    const priceLabel = settings.pricing?.enabled && settings.pricing?.amount
+        ? ` <span class="text-success">(+ ${ppxo_admin.currency_symbol}${settings.pricing.amount})</span>`
+        : '';
+
+    // Tooltip for help text
+    const helpTextTooltip = helpText
+        ? `data-bs-toggle="tooltip" data-bs-placement="top" title="${helpText}"`
+        : '';
+
+    // --- Wrapper start ---
+    const fieldStart = `
+        <div class="wfb-form-field ${wrapperClass}" data-field-id="${fieldId}" 
+             style="${fieldBackground ? `background:${fieldBackground}; padding:10px; border-radius:5px;` : ''}">
+            <div class="wfb-mobile-drag-handle"><i class="fas fa-grip-lines"></i></div>
+            ${beforeText ? `<div class="ppxo-before-text">${beforeText}</div>` : ''}
+            <label class="form-label" ${helpTextTooltip} style="${styleToString(labelStyle)}">
+                ${settings.label || ''}${settings.required ? ' <span class="text-danger">*</span>' : ''}${priceLabel}
+            </label>
     `;
 
-    const requiredMark = required ? `<span class="wfb-required text-danger ms-1">*</span>` : '';
-    const helpEl = helpText ? `<span class="wfb-field-help ms-2 ppxo-help-circle" data-help="${helpText}"><i class="fas fa-question-circle"></i></span>` : '';
-    const priceLabel = priceAmount > 0 ? `<span class="ppxo-price-badge ms-2">+ ${ppxo_admin.currency_symbol}${priceAmount}</span>` : '';
-
-    const fieldStart = `
-    <div class="wfb-form-field position-relative ${wrapperClass} p-4 mb-4" data-field-id="${fieldId}">
-        <div class="wfb-field-actions position-absolute top-0 start-50 translate-middle-x d-flex gap-2 bg-white rounded-bottom-3 p-1 shadow-sm">
+    // --- Wrapper end ---
+    const fieldEnd = `
+            ${afterText ? `<div class="ppxo-after-text">${afterText}</div>` : ''}
+            ${description ? `<small class="form-text text-muted" style="${styleToString(descriptionStyle)}">${description}</small>` : ''}
             ${getFieldActionsHtml()}
         </div>
-        <div class="ppxo-field-wrapper">
-            ${beforeText ? `<div class="ppxo-before mb-2 small text-muted">${beforeText}</div>` : ''}
-            ${!hideLabel ? `
-                <label class="wfb-field-label d-block mb-2 fw-bold text-dark">
-                    ${label}${requiredMark}${helpEl}${priceLabel}
-                </label>
-            ` : ''}
     `;
 
-    const fieldEnd = `
-            ${description ? `<small class="text-muted d-block mt-2 opacity-75">${description}</small>` : ''}
-            ${afterText ? `<div class="ppxo-after mt-2 text-secondary fw-medium">${afterText}</div>` : ''}
-        </div>
-    </div>`;
-
     let fieldHtml = '';
-    const commonInputClass = `wfb-input ppxo-saas-input ${inputClass}`;
 
-    switch (type) {
+    // --- Field type handling ---
+    switch (settings.type) {
         case 'text':
         case 'email':
         case 'number':
-        case 'tel':
-        case 'url':
         case 'date':
         case 'password':
-            fieldHtml = `${fieldStart}<input type="${type}" class="${commonInputClass}" placeholder="${placeholder}" value="${defaultValue}">${fieldEnd}`;
+        case 'url':
+        case 'tel':
+            fieldHtml = `
+                ${fieldStart}
+                <input type="${settings.type}" class="form-control ${inputClass}" 
+                    placeholder="${settings.placeholder || ''}" 
+                    value="${defaultValue}"
+                    style="${styleToString(defaultValueStyle)}">
+                ${fieldEnd}
+            `;
             break;
 
         case 'textarea':
-            fieldHtml = `${fieldStart}<textarea class="${commonInputClass}" rows="${settings.rows || 3}" placeholder="${placeholder}">${defaultValue}</textarea>${fieldEnd}`;
-            break;
-
-        case 'image_swatch':
-            let swatches = (settings.options || []).map((opt, i) => `
-                <div class="ppxo-swatch-option">
-                    <input type="radio" class="d-none" id="sw-${fieldId}-${i}" name="sw-${fieldId}">
-                    <label for="sw-${fieldId}-${i}" class="ppxo-swatch-card border rounded-3 p-1">
-                        <img src="${opt.image || 'https://via.placeholder.com/150'}" class="img-fluid rounded-2 mb-1">
-                        <div class="ppxo-swatch-label small text-center fw-bold">${opt.label || ''}</div>
-                    </label>
-                </div>
-            `).join('');
-            fieldHtml = `${fieldStart}<div class="ppxo-swatch-grid d-flex gap-2 flex-wrap">${swatches}</div>${fieldEnd}`;
+            const rows = settings.rows || 4;
+            const height = settings.height || 120;
+            fieldHtml = `
+                ${fieldStart}
+                <textarea class="form-control ${inputClass}" 
+                    rows="${rows}" 
+                    placeholder="${settings.placeholder || ''}" 
+                    style="height:${height}px;${styleToString(defaultValueStyle)}"
+                >${defaultValue}</textarea>
+                ${fieldEnd}
+            `;
             break;
 
         case 'select':
-            let options = (settings.options || []).map(o => `<option value="${o.value || o}">${o.label || o}</option>`).join('');
-            fieldHtml = `${fieldStart}<select class="form-select ${commonInputClass}">${options}</select>${fieldEnd}`;
+            let optionsHtml = '';
+            if (settings.options?.length) {
+                settings.options.forEach(option => {
+                    const value = typeof option === 'object' ? option.value : option;
+                    const label = typeof option === 'object' ? option.label : option;
+                    const price = typeof option === 'object' && option.price
+                        ? ` (+ ${ppxo_admin.currency_symbol}${option.price})`
+                        : '';
+                    const selected = value === defaultValue ? 'selected' : '';
+                    optionsHtml += `<option value="${value}" ${selected}>${label}${price}</option>`;
+                });
+            }
+            fieldHtml = `
+                ${fieldStart}
+                <select class="form-select ${inputClass}" style="${styleToString(defaultValueStyle)}">
+                    <option value="">Please select</option>
+                    ${optionsHtml}
+                </select>
+                ${fieldEnd}
+            `;
             break;
 
-        case 'radio':
         case 'checkbox':
-            let checks = (settings.options || []).map((opt, i) => `
-                <div class="mb-2 ppxo-custom-check">
-                    <input class="form-check-input-custom" type="${type}" id="${fieldId}-${i}" name="${fieldId}">
-                    <label class="form-check-label fw-medium" for="${fieldId}-${i}">${opt.label || opt}</label>
-                </div>`).join('');
-            fieldHtml = `${fieldStart}<div class="mt-2">${checks}</div>${fieldEnd}`;
+        case 'radio':
+            let optionsHtmlMulti = '';
+            if (settings.options?.length) {
+                settings.options.forEach((option, i) => {
+                    const value = typeof option === 'object' ? option.value : option;
+                    const label = typeof option === 'object' ? option.label : option;
+                    const price = typeof option === 'object' && option.price
+                        ? ` (+ ${ppxo_admin.currency_symbol}${option.price})`
+                        : '';
+                    const checked = settings.type === 'checkbox'
+                        ? (Array.isArray(defaultValue) ? defaultValue.includes(value) : false)
+                        : value === defaultValue ? 'checked' : '';
+                    optionsHtmlMulti += `
+                        <div class="form-checkbox">
+                            <input class="form-check-input-box ${inputClass}" type="${settings.type}" 
+                                name="${settings.type === 'checkbox' ? fieldId + '[]' : fieldId}" 
+                                id="${fieldId}-${i}" value="${value}" ${checked} 
+                                style="${styleToString(defaultValueStyle)}">
+                            <label class="form-check-label" for="${fieldId}-${i}" style="${styleToString(labelStyle)}">
+                                ${label}${price}
+                            </label>
+                        </div>
+                    `;
+                });
+            }
+            fieldHtml = `${fieldStart}${optionsHtmlMulti}${fieldEnd}`;
             break;
 
-        default:
-            fieldHtml = `${fieldStart}<input type="text" class="${commonInputClass}" value="${defaultValue}">${fieldEnd}`;
+        case 'file':
+            fieldHtml = `
+                ${fieldStart}
+                <input type="file" class="form-control ${inputClass}"
+                    ${settings.multiple ? 'multiple' : ''}
+                    ${settings.accept ? `accept="${settings.accept}"` : ''}
+                    style="${styleToString(defaultValueStyle)}">
+                ${fieldEnd}
+            `;
+            break;
+
+        case 'hidden':
+            fieldHtml = `
+                ${fieldStart}
+                <input type="hidden" value="${defaultValue}">
+                ${fieldEnd}
+            `;
+            break;
     }
 
     return fieldHtml;
 }
-
-
-
-
-
-
 
 
 
@@ -149,7 +202,42 @@ export function initFieldTooltips() {
 
 
 
+
+
+
+
+
+
+
+
+
+
+// Helper: common field action buttons
+function getFieldActionsHtml() {
+    return `
+        <div class="wfb-field-actions">
+            <button class="btn btn-sm btn-outline-secondary wfb-edit-field" data-bs-toggle="tooltip" title="Edit">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-info wfb-duplicate-field" data-bs-toggle="tooltip" title="Duplicate">
+                <i class="fas fa-copy"></i>
+            </button>
+          
+            <button class="btn btn-sm btn-outline-danger wfb-remove-field" data-bs-toggle="tooltip" title="Remove">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+}
+
+
+
+
+
+
+// Generate field preview HTML with inline styles
 export function generateFieldPreview(field) {
+    console.log(field);
 
     const advanced = field.advanced || {};
     const displayStyle = advanced.displayStyle || {};
@@ -241,13 +329,13 @@ export function generateFieldPreview(field) {
             let optionsHtmlMulti = '';
             if (field.options && field.options.length) {
                 field.options.forEach((option, index) => {
-                    const checked = (field.type === 'checkbox'
+                    const checked = (field.type === 'checkbox' 
                         ? Array.isArray(defaultValue) && defaultValue.includes(option)
                         : option === defaultValue) ? 'checked' : '';
 
                     optionsHtmlMulti += `
                         <div class="form-check">
-                            <input class="form-check-input-custom" type="${field.type}" 
+                            <input class="form-check-input" type="${field.type}" 
                                 name="${field.type === 'checkbox' ? field.id + '[]' : field.id}" 
                                 id="preview-${field.id}-${index}" value="${option}" ${checked}
                                 style="${styleToString(displayStyle.defaultValue)}">
@@ -257,9 +345,6 @@ export function generateFieldPreview(field) {
                         </div>
                     `;
                 });
-
-                console.log(optionsHtmlMulti);
-                
             }
 
             fieldHtml = `
